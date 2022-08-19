@@ -5,10 +5,10 @@ import getApi from './api';
 export function useFetch<T = unknown>(
   url: string,
   options?: AxiosRequestConfig,
-  useV2Api?: boolean
+  useV2Api?: boolean,
 ) {
   const api = getApi(useV2Api);
-  
+
   const [data, setData] = useState<T>({} as T);
 
   const [loading, setLoading] = useState(false);

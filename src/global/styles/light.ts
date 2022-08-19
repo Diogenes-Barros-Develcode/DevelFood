@@ -103,6 +103,7 @@ export default {
     dark: require('../assets/themeIcons/dark.png'),
     light: require('../assets/themeIcons/light.png'),
     default: require('../assets/themeIcons/default.png'),
+    privacyIcon: require('../assets/Icons/privacyIcon.png'),
   },
 
   images: {

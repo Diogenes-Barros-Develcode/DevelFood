@@ -21,6 +21,14 @@ export const Icon = styled.Image`
   margin-left: ${RFValue(25)}px;
 `;
 
+export const IconPrivacyData = styled.Image.attrs({
+  tintColor: '#BFBABA',
+})`
+  margin-left: ${RFValue(23)}px;
+  width: ${RFValue(25)}px;
+  height: ${RFValue(25)}px;
+`;
+
 export const Wrapper = styled.View`
   width: 70%;
   margin-left: ${RFValue(30)}px;

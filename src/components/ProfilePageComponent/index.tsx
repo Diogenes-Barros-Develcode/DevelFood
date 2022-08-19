@@ -5,14 +5,17 @@ import {
   ButtonText,
   Container,
   Icon,
+  IconPrivacyData,
   Wrapper,
 } from './styles';
 
 interface Props {
   onPress: () => void;
-  sourceIcon: string;
+  sourceIcon?: string;
   name: string;
   sourceArrowIcon: string;
+  privacyDataIcon: boolean;
+  sourcePrivacyIcon?: string;
 }
 
 export function ProfilePageComponent({
@@ -20,11 +23,17 @@ export function ProfilePageComponent({
   sourceIcon,
   name,
   sourceArrowIcon,
+  privacyDataIcon,
+  sourcePrivacyIcon,
 }: Props) {
   return (
     <Container>
       <Button onPress={onPress}>
-        <Icon source={sourceIcon} />
+        {privacyDataIcon ? (
+          <IconPrivacyData source={sourcePrivacyIcon} />
+        ) : (
+          <Icon source={sourceIcon} />
+        )}
         <Wrapper>
           <ButtonText>{name}</ButtonText>
           <ArrowImage source={sourceArrowIcon} />

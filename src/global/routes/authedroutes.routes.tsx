@@ -10,6 +10,7 @@ import {CartProvider} from '../context/Cart';
 import {About} from '@screens/About';
 import {PlatesDetails} from '@screens/PlatesDetails';
 import {EditProfile} from '@screens/Settings/EditProfile';
+import {DataPrivacy} from '@screens/DataPrivacy';
 
 const {Navigator, Screen} = createNativeStackNavigator();
 
@@ -28,6 +29,7 @@ export function AuthedRoutes() {
           <Screen name="About" component={About} />
           <Screen name="PlatesDetails" component={PlatesDetails} />
           <Screen name="EditProfile" component={EditProfile} />
+          <Screen name="DataPrivacy" component={DataPrivacy} />
         </Navigator>
       </CartProvider>
     </>

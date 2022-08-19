@@ -171,6 +171,7 @@ export function Settings() {
           name="Ajuda"
           sourceArrowIcon={themeProps.icons.settingsArrow}
           sourceIcon={themeProps.icons.help}
+          privacyDataIcon={false}
         />
 
         <ProfilePageComponent
@@ -178,6 +179,15 @@ export function Settings() {
           name="Sobre o DevelFood"
           sourceArrowIcon={themeProps.icons.settingsArrow}
           sourceIcon={themeProps.icons.about}
+          privacyDataIcon={false}
+        />
+
+        <ProfilePageComponent
+          onPress={() => navigation.navigate('DataPrivacy' as never)}
+          name="Privacidade de Dados"
+          sourceArrowIcon={themeProps.icons.settingsArrow}
+          sourcePrivacyIcon={themeProps.icons.privacyIcon}
+          privacyDataIcon
         />
 
         <ProfilePageComponent
@@ -185,6 +195,7 @@ export function Settings() {
           name="Sair do App"
           sourceArrowIcon={themeProps.icons.settingsArrow}
           sourceIcon={themeProps.icons.logoutIcon}
+          privacyDataIcon={false}
         />
 
         <ProfilePageComponent
@@ -192,6 +203,7 @@ export function Settings() {
           name="Excluir Conta"
           sourceArrowIcon={themeProps.icons.settingsArrow}
           sourceIcon={themeProps.icons.deleteUserIcon}
+          privacyDataIcon={false}
         />
       </Content>
 
