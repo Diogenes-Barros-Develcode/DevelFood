@@ -15,6 +15,12 @@ interface Props {
   token: string;
   loading: boolean;
   logOut: Function;
+  isAllowEmail: boolean | undefined;
+  setIsAllowEmail: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  isAllowSMS: boolean | undefined;
+  setIsAllowSMS: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  isAllowCall: boolean | undefined;
+  setIsAllowCall: React.Dispatch<React.SetStateAction<boolean | undefined>>;
 }
 
 interface LoginRequest {
@@ -32,6 +38,12 @@ const AuthContext = createContext({
   userLogin: () => {},
   token: '',
   logOut: () => {},
+  isAllowEmail: false,
+  setIsAllowEmail: () => {},
+  isAllowSMS: false,
+  setIsAllowSMS: () => {},
+  isAllowCall: false,
+  setIsAllowCall: () => {},
 } as Props);
 
 function AuthProvider({children}: AuthProviderProps) {
@@ -39,9 +51,11 @@ function AuthProvider({children}: AuthProviderProps) {
   const [token, setToken] = useState('');
   const navigation = useNavigation();
 
-  const loginError = () => {
-    Alert.alert('Erro', 'Email ou senha incorretos');
-  };
+  const [isAllowEmail, setIsAllowEmail] = useState<boolean>();
+
+  const [isAllowSMS, setIsAllowSMS] = useState<boolean>();
+
+  const [isAllowCall, setIsAllowCall] = useState<boolean>();
 
   async function logOut() {
     try {
@@ -53,6 +67,30 @@ function AuthProvider({children}: AuthProviderProps) {
         (token === '' && navigation.navigate('Login' as never));
       await AsyncStorage.removeItem('@userToken');
     } catch (error) {}
+  }
+
+  // async function setUserAllowNotification() {
+  //   await AsyncStorage.setItem('@userPrivacy', JSON.stringify(isAllowEmail));
+  // }
+
+  // const getUserAllowNotification = async () => {
+  //   try {
+  //     const userAllowNotification = await AsyncStorage.getItem('@userPrivacy')
+  //     if(userAllowNotification) {
+  //       setIsAllowEmail(JSON.parse(userAllowNotification));
+  //     }
+  //   } catch (error) {
+  //     Alert.alert('Erro');
+  //   }
+  // };
+
+  // async function setUserAllowNotification(notification: string) {
+  //   setIsAllowEmail(JSON.parse(notification));
+  // }
+
+  async function getUserAllowNotification() {
+    const allowNotification = await AsyncStorage.getItem('@userPrivacy');
+    allowNotification && setIsAllowEmail(JSON.parse(allowNotification));
   }
 
   const getUserData = async () => {
@@ -71,21 +109,31 @@ function AuthProvider({children}: AuthProviderProps) {
     await AsyncStorage.setItem('@userToken', dataAsyncStorage.token);
   }
 
+  
+  const loginError = () => {
+    Alert.alert('Erro', 'Email ou senha incorretos');
+  };
+
   async function userLogin(request: LoginRequest) {
     try {
       await handlerPost(request, loginError, onSuccess);
       setToken(data.token);
+      setIsAllowEmail(isAllowEmail)
       data.token && (await AsyncStorage.setItem('@userToken', token));
+      await AsyncStorage.setItem('@userPrivacy', JSON.stringify(isAllowEmail));
     } catch (error) {}
   }
 
   useEffect(() => {
     setToken(data.token);
     getUserData();
+    setIsAllowEmail(isAllowEmail);
+    getUserAllowNotification();
+    console.log(isAllowEmail)
   }, [loading, data.token]);
 
   return (
-    <AuthContext.Provider value={{userLogin, token, loading, logOut}}>
+    <AuthContext.Provider value={{userLogin, token, loading, logOut, isAllowEmail, setIsAllowEmail, isAllowSMS, setIsAllowSMS, isAllowCall, setIsAllowCall}}>
       {children}
     </AuthContext.Provider>
   );

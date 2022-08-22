@@ -17,24 +17,6 @@ interface Props {
   id: number;
   name: string;
 }
-
-interface allowEmail {
-  userID: number;
-  allowEmail: boolean;
-  allowSMS: boolean;
-  allowCall: boolean;
-}
-
-interface allowSMS {
-  userID: number;
-  allowSMS: boolean;
-}
-
-interface allowCall {
-  userID: number;
-  allowCall: boolean;
-}
-
 interface CostumerProps {
   id: number;
   firstName: string;
@@ -47,13 +29,7 @@ interface UserProps {
 export function DataPrivacy() {
   const theme = useTheme();
 
-  const {token} = useAuth();
-
-  const [isAllowEmail, setIsAllowEmail] = useState<boolean>();
-
-  const [isAllowSMS, setIsAllowSMS] = useState<boolean>();
-
-  const [isAllowCall, setIsAllowCall] = useState<boolean>();
+  const {token, isAllowEmail, setIsAllowEmail, isAllowSMS, setIsAllowSMS, isAllowCall, setIsAllowCall} = useAuth();
 
   const [data, setData] = useState();
 
@@ -67,7 +43,7 @@ export function DataPrivacy() {
 
   const get = async () => {
     await axios
-      .get<Props>('http://192.168.0.66:3333/sms')
+      .get<Props>('http://192.168.0.7:3333/sms')
       .then((response: AxiosResponse) => {
         setData(response.data);
       })
@@ -84,9 +60,12 @@ export function DataPrivacy() {
       allowCall: isAllowCall,
     };
     await axios
-      .post('http://192.168.0.66:3333/notification', userOptions)
+      .post('http://192.168.0.7:3333/notification', userOptions)
       .then((response: AxiosResponse) => {
         console.log('erro1', response.data);
+        setIsAllowEmail(isAllowEmail);
+        setIsAllowSMS(isAllowSMS);
+        setIsAllowCall(isAllowCall);
       })
       .catch((error: AxiosError) => {
         console.log(error);
@@ -97,6 +76,8 @@ export function DataPrivacy() {
     get();
     fetchData();
     console.log(dataID?.costumer?.id);
+    // console.log('opa',IsAllowEmail)
+    console.log('oi',isAllowEmail)
   }, [data]);
 
   return (
@@ -141,7 +122,7 @@ export function DataPrivacy() {
           style={[styles.submitButton]}
           onPress={() => {
             post();
-            console.log('click', data);
+            console.log('click', isAllowEmail);
           }}>
           <Text>Salvar</Text>
         </TouchableOpacity>
