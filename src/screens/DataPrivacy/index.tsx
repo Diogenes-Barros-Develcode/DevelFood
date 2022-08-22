@@ -1,21 +1,22 @@
 import React, {useState} from 'react';
-import {Text} from 'react-native';
-import {Container, Content, DataPrivacyWrapper, Title} from './styles';
+import {Alert, Text} from 'react-native';
+import {Container, Content, DataPrivacyWrapper, PrivacyText, PrivacyTitle, SaveButton, SaveTitle, Title} from './styles';
 import CheckBox from '@react-native-community/checkbox';
 import {StyleSheet} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {HeaderComponent} from '@components/HeaderComponent';
 import {useTheme} from 'styled-components';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useEffect} from 'react';
 import axios, {AxiosError, AxiosResponse} from 'axios';
-import {RouteProp} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {useAuth} from '@global/context';
 import {useFetch} from '@global/services/get';
 
 interface Props {
-  id: number;
-  name: string;
+  userID: number;
+  allowSMS: boolean;
+  allowEmail: boolean;
+  allowCall: boolean;
 }
 interface CostumerProps {
   id: number;
@@ -26,14 +27,14 @@ interface UserProps {
   costumer: CostumerProps;
 }
 
-export function DataPrivacy() {
+export function DataPrivacy({userID}: Props) {
   const theme = useTheme();
 
   const {token, isAllowEmail, setIsAllowEmail, isAllowSMS, setIsAllowSMS, isAllowCall, setIsAllowCall} = useAuth();
 
-  const [data, setData] = useState();
+  const [data, setData] = useState<Props>({} as Props);
 
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
 
   const {data: dataID, fetchData} = useFetch<UserProps>('/auth', {
     headers: {
@@ -43,7 +44,7 @@ export function DataPrivacy() {
 
   const get = async () => {
     await axios
-      .get<Props>('http://192.168.0.7:3333/sms')
+      .get<Props>(`http://192.168.0.7:3333/notification/${userID}`)
       .then((response: AxiosResponse) => {
         setData(response.data);
       })
@@ -61,23 +62,38 @@ export function DataPrivacy() {
     };
     await axios
       .post('http://192.168.0.7:3333/notification', userOptions)
-      .then((response: AxiosResponse) => {
-        console.log('erro1', response.data);
+      .then(() => {
         setIsAllowEmail(isAllowEmail);
         setIsAllowSMS(isAllowSMS);
         setIsAllowCall(isAllowCall);
       })
       .catch((error: AxiosError) => {
-        console.log(error);
+        Alert.alert('Erro', 'Erro ao salvar')
+      });
+  };
+
+  const put = async () => {
+    const userOptions = {
+      userID: dataID?.costumer?.id,
+      allowSMS: isAllowEmail,
+      allowEmail: isAllowSMS,
+      allowCall: isAllowCall,
+    };
+    await axios
+      .post(`http://192.168.0.7:3333/notification/`, userOptions)
+      .then(() => {
+        setIsAllowEmail(isAllowEmail);
+        setIsAllowSMS(isAllowSMS);
+        setIsAllowCall(isAllowCall);
+      })
+      .catch((error: AxiosError) => {
+        Alert.alert('Erro', 'Erro ao salvar')
       });
   };
 
   useEffect(() => {
     get();
     fetchData();
-    console.log(dataID?.costumer?.id);
-    // console.log('opa',IsAllowEmail)
-    console.log('oi',isAllowEmail)
   }, [data]);
 
   return (
@@ -85,11 +101,22 @@ export function DataPrivacy() {
       <HeaderComponent
         name="Privacidade de Dados"
         Textcolor={theme.colors.text_dark}
+        source={theme.icons.arrow}
+        onPress={navigation.goBack}
+        backgroudColor={theme.colors.background}
       />
       <Content>
+
+        <PrivacyText>
+          De acordo com a Lei Geral de Proteção de Dados Pessoais (LGPD), para que os seus dados pessoas estejam seguros e possam ser utilizados apenas nos benefícios
+          que você deseja, é necessario que você consista o uso deles, clicando abaixo:
+        </PrivacyText>
+
+        <PrivacyTitle>Por onde aceita receber comunicação?</PrivacyTitle>
+
         <DataPrivacyWrapper>
-          <Title>Aceita receber email com promoções?</Title>
-          <Text>{dataID?.costumer?.id}</Text>
+          <Title>Aceita receber e-mail com promoções?</Title>
+          <Text>{data.userID}</Text>
           <CheckBox
             style={styles.checkbox}
             value={isAllowEmail}
@@ -118,15 +145,17 @@ export function DataPrivacy() {
           />
         </DataPrivacyWrapper>
 
-        <TouchableOpacity
-          style={[styles.submitButton]}
-          onPress={() => {
-            post();
-            console.log('click', isAllowEmail);
-          }}>
-          <Text>Salvar</Text>
-        </TouchableOpacity>
-      </Content>
+        </Content>
+
+        <SaveButton
+            onPress={() => {
+            {data.allowEmail ? put() : post();}
+            console.log('click', isAllowEmail, isAllowSMS);
+          }}
+          >
+          <SaveTitle>Salvar</SaveTitle>
+        </SaveButton>
+
     </Container>
   );
 }
@@ -135,17 +164,5 @@ const styles = StyleSheet.create({
   checkbox: {
     width: RFValue(20),
     height: RFValue(20),
-  },
-  submitButton: {
-    width: RFValue(200),
-    height: RFValue(50),
-    borderRadius: RFValue(30),
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: 'red',
-  },
-  title: {
-    fontSize: RFValue(20),
-    fontWeight: '400',
   },
 });

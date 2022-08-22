@@ -69,30 +69,6 @@ function AuthProvider({children}: AuthProviderProps) {
     } catch (error) {}
   }
 
-  // async function setUserAllowNotification() {
-  //   await AsyncStorage.setItem('@userPrivacy', JSON.stringify(isAllowEmail));
-  // }
-
-  // const getUserAllowNotification = async () => {
-  //   try {
-  //     const userAllowNotification = await AsyncStorage.getItem('@userPrivacy')
-  //     if(userAllowNotification) {
-  //       setIsAllowEmail(JSON.parse(userAllowNotification));
-  //     }
-  //   } catch (error) {
-  //     Alert.alert('Erro');
-  //   }
-  // };
-
-  // async function setUserAllowNotification(notification: string) {
-  //   setIsAllowEmail(JSON.parse(notification));
-  // }
-
-  async function getUserAllowNotification() {
-    const allowNotification = await AsyncStorage.getItem('@userPrivacy');
-    allowNotification && setIsAllowEmail(JSON.parse(allowNotification));
-  }
-
   const getUserData = async () => {
     try {
       const userToken = await AsyncStorage.getItem('@userToken');
@@ -118,9 +94,7 @@ function AuthProvider({children}: AuthProviderProps) {
     try {
       await handlerPost(request, loginError, onSuccess);
       setToken(data.token);
-      setIsAllowEmail(isAllowEmail)
       data.token && (await AsyncStorage.setItem('@userToken', token));
-      await AsyncStorage.setItem('@userPrivacy', JSON.stringify(isAllowEmail));
     } catch (error) {}
   }
 
@@ -128,7 +102,6 @@ function AuthProvider({children}: AuthProviderProps) {
     setToken(data.token);
     getUserData();
     setIsAllowEmail(isAllowEmail);
-    getUserAllowNotification();
     console.log(isAllowEmail)
   }, [loading, data.token]);
 

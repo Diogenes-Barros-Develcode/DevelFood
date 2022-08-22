@@ -8,8 +8,22 @@ export const Container = styled.View`
 
 export const Content = styled.View`
   width: 100%;
+  height: 100%;
   padding-left: ${RFValue(20)}px;
   padding-right: ${RFValue(20)}px;
+`;
+
+export const PrivacyText = styled.Text`
+  font-size: ${RFValue(12)}px;
+  text-align: justify;
+`;
+
+export const PrivacyTitle = styled.Text`
+  margin-top: ${RFValue(20)}px;
+  margin-bottom: ${RFValue(10)}px;
+  font-size: ${RFValue(15)}px;
+  color: ${({theme}) => theme.colors.text_dark};
+  text-align: center;
 `;
 
 export const DataPrivacyWrapper = styled.View`
@@ -22,20 +36,19 @@ export const DataPrivacyWrapper = styled.View`
 
 export const Title = styled.Text``;
 
-export const SubmitButton = styled.TouchableOpacity`
-  width: ${RFValue(200)}px;
+export const SaveButton = styled.TouchableOpacity`
+  width: 90%;
   height: ${RFValue(50)}px;
-  border-radius: ${RFValue(30)}px;
-  border: ${RFValue(1)}px;
-  border-color: ${({theme}) => theme.colors.modalButtonClose};
+  border-radius: ${RFValue(10)}px;
   align-items: center;
   justify-content: center;
-  background-color: ${({theme}) => theme.colors.background};
-  top: ${RFValue(35)}px;
-  margin-bottom: ${RFValue(40)}px;
+  align-self: center;
+  background-color: ${({theme}) => theme.colors.background_red};
+  position: absolute;
+  bottom: ${RFValue(20)}px;
 `;
 
-export const SubmitButtonText = styled.Text`
+export const SaveTitle = styled.Text`
   font-size: ${RFValue(14)}px;
-  color: ${({theme}) => theme.colors.background_red};
+  color: ${({theme}) => theme.colors.background};
 `;
