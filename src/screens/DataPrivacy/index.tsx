@@ -34,8 +34,6 @@ export function DataPrivacy({userID}: Props) {
 
   const [data, setData] = useState<Props>({} as Props);
 
-  const [newData, setNewData] = useState(false);
-
   const [mongoID, setMongoID] = useState<string>('');
 
   const navigation = useNavigation();
