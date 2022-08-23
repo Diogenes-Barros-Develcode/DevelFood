@@ -49,7 +49,6 @@ export function DataPrivacy({userID}: Props) {
       .get<Props>(`http://192.168.0.7:3333/notification/${userID}`)
       .then((response: AxiosResponse) => {
         setData(response.data);
-        console.log('response', response.data);
         setIsAllowEmail(!!response?.data?.allowEmail || false);
         setIsAllowSMS(!!response?.data?.allowSMS || false);
         setIsAllowCall(!!response?.data?.allowCall || false);
@@ -170,7 +169,6 @@ export function DataPrivacy({userID}: Props) {
         <SaveButton
             onPress={() => {
               handleNotificationButton()
-            console.log('click', isAllowEmail, isAllowSMS);
             setTimeout(() => {get()}, 500)
           }}
           >
