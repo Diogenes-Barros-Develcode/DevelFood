@@ -16,12 +16,15 @@ export const Content = styled.View`
 export const PrivacyText = styled.Text`
   font-size: ${RFValue(12)}px;
   text-align: justify;
+  color: ${({theme}) => theme.colors.text_dark};
+  font-weight: 400;
 `;
 
 export const PrivacyTitle = styled.Text`
   margin-top: ${RFValue(20)}px;
   margin-bottom: ${RFValue(10)}px;
   font-size: ${RFValue(15)}px;
+  font-weight: 600;
   color: ${({theme}) => theme.colors.text_dark};
   text-align: center;
 `;
@@ -34,7 +37,11 @@ export const DataPrivacyWrapper = styled.View`
   justify-content: space-between;
 `;
 
-export const Title = styled.Text``;
+export const Title = styled.Text`
+  font-size: ${RFValue(14)}px;
+  color: ${({theme}) => theme.colors.text_dark};
+  font-weight: 400;
+`;
 
 export const SaveButton = styled.TouchableOpacity`
   width: 90%;

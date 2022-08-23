@@ -101,8 +101,6 @@ function AuthProvider({children}: AuthProviderProps) {
   useEffect(() => {
     setToken(data.token);
     getUserData();
-    setIsAllowEmail(isAllowEmail);
-    console.log(isAllowEmail)
   }, [loading, data.token]);
 
   return (

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Alert, Text} from 'react-native';
 import {Container, Content, DataPrivacyWrapper, PrivacyText, PrivacyTitle, SaveButton, SaveTitle, Title} from './styles';
 import CheckBox from '@react-native-community/checkbox';
@@ -8,7 +8,7 @@ import {HeaderComponent} from '@components/HeaderComponent';
 import {useTheme} from 'styled-components';
 import {useEffect} from 'react';
 import axios, {AxiosError, AxiosResponse} from 'axios';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useAuth} from '@global/context';
 import {useFetch} from '@global/services/get';
 interface Props {
@@ -27,12 +27,16 @@ interface UserProps {
   costumer: CostumerProps;
 }
 
-export function DataPrivacy({_id, userID}: Props) {
+export function DataPrivacy({userID}: Props) {
   const theme = useTheme();
 
   const {token, isAllowEmail, setIsAllowEmail, isAllowSMS, setIsAllowSMS, isAllowCall, setIsAllowCall} = useAuth();
 
   const [data, setData] = useState<Props>({} as Props);
+
+  const [newData, setNewData] = useState(false);
+
+  const [mongoID, setMongoID] = useState<string>('');
 
   const navigation = useNavigation();
 
@@ -47,6 +51,11 @@ export function DataPrivacy({_id, userID}: Props) {
       .get<Props>(`http://192.168.0.7:3333/notification/${userID}`)
       .then((response: AxiosResponse) => {
         setData(response.data);
+        console.log('response', response.data);
+        setIsAllowEmail(!!response?.data?.allowEmail || false);
+        setIsAllowSMS(!!response?.data?.allowSMS || false);
+        setIsAllowCall(!!response?.data?.allowCall || false);
+        setMongoID(response?.data?._id)
       })
       .catch((error: AxiosError) => {
         console.log(error);
@@ -56,15 +65,15 @@ export function DataPrivacy({_id, userID}: Props) {
   const post = async () => {
     const userOptions = {
       userID: dataID?.costumer?.id,
-      allowSMS: isAllowEmail,
-      allowEmail: isAllowSMS,
+      allowEmail: isAllowEmail,
+      allowSMS: isAllowSMS,
       allowCall: isAllowCall,
     };
     await axios
       .post('http://192.168.0.7:3333/notification', userOptions)
       .then(() => {
-        setIsAllowEmail(isAllowEmail);
         setIsAllowSMS(isAllowSMS);
+        setIsAllowEmail(isAllowEmail);
         setIsAllowCall(isAllowCall);
       })
       .catch((error: AxiosError) => {
@@ -75,12 +84,12 @@ export function DataPrivacy({_id, userID}: Props) {
   const put = async () => {
     const userOptions = {
       userID: dataID?.costumer?.id,
-      allowSMS: isAllowEmail,
       allowEmail: isAllowSMS,
+      allowSMS: isAllowEmail,
       allowCall: isAllowCall,
     };
     await axios
-      .put(`http://192.168.0.7:3333/notification/${_id}`, userOptions)
+      .put(`http://192.168.0.7:3333/notification/${mongoID}`, userOptions)
       .then(() => {
         setIsAllowEmail(isAllowEmail);
         setIsAllowSMS(isAllowSMS);
@@ -94,17 +103,20 @@ export function DataPrivacy({_id, userID}: Props) {
   };
 
   function handleNotificationButton() {
-    if (data._id) {
+    console.log(mongoID);
+    if (mongoID) {
       put();
     } else {
       post();
     }
   }
 
-  useEffect(() => {
-    get();
-    fetchData();
-  }, [data]);
+  useFocusEffect(
+    useCallback(() => {
+      get();
+      fetchData();
+    }, [mongoID])
+  );
 
   return (
     <Container>
@@ -161,6 +173,7 @@ export function DataPrivacy({_id, userID}: Props) {
             onPress={() => {
               handleNotificationButton()
             console.log('click', isAllowEmail, isAllowSMS);
+            setTimeout(() => {get()}, 500)
           }}
           >
           <SaveTitle>Salvar</SaveTitle>
