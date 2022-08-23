@@ -11,8 +11,8 @@ import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useNavigation} from '@react-navigation/native';
 import {useAuth} from '@global/context';
 import {useFetch} from '@global/services/get';
-
 interface Props {
+  _id: string;
   userID: number;
   allowSMS: boolean;
   allowEmail: boolean;
@@ -27,7 +27,7 @@ interface UserProps {
   costumer: CostumerProps;
 }
 
-export function DataPrivacy({userID}: Props) {
+export function DataPrivacy({_id, userID}: Props) {
   const theme = useTheme();
 
   const {token, isAllowEmail, setIsAllowEmail, isAllowSMS, setIsAllowSMS, isAllowCall, setIsAllowCall} = useAuth();
@@ -80,16 +80,26 @@ export function DataPrivacy({userID}: Props) {
       allowCall: isAllowCall,
     };
     await axios
-      .post(`http://192.168.0.7:3333/notification/`, userOptions)
+      .put(`http://192.168.0.7:3333/notification/${_id}`, userOptions)
       .then(() => {
         setIsAllowEmail(isAllowEmail);
         setIsAllowSMS(isAllowSMS);
         setIsAllowCall(isAllowCall);
+        console.log('console.log ==>', isAllowEmail, isAllowCall, isAllowSMS)
       })
       .catch((error: AxiosError) => {
-        Alert.alert('Erro', 'Erro ao salvar')
+        Alert.alert('Erro', 'Erro ao editar')
+        console.log(error)
       });
   };
+
+  function handleNotificationButton() {
+    if (data._id) {
+      put();
+    } else {
+      post();
+    }
+  }
 
   useEffect(() => {
     get();
@@ -116,7 +126,7 @@ export function DataPrivacy({userID}: Props) {
 
         <DataPrivacyWrapper>
           <Title>Aceita receber e-mail com promoções?</Title>
-          <Text>{data.userID}</Text>
+          <Text>{data?.userID}</Text>
           <CheckBox
             style={styles.checkbox}
             value={isAllowEmail}
@@ -149,7 +159,7 @@ export function DataPrivacy({userID}: Props) {
 
         <SaveButton
             onPress={() => {
-            {data.allowEmail ? put() : post();}
+              handleNotificationButton()
             console.log('click', isAllowEmail, isAllowSMS);
           }}
           >
