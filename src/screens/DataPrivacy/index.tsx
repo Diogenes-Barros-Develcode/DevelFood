@@ -46,7 +46,7 @@ export function DataPrivacy({userID}: Props) {
 
   const get = async () => {
     await axios
-      .get<Props>(`http://192.168.0.7:3333/notification/${userID}`)
+      .get<Props>(`https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/notification/${userID}`)
       .then((response: AxiosResponse) => {
         setData(response.data);
         setIsAllowEmail(!!response?.data?.allowEmail || false);
@@ -67,7 +67,7 @@ export function DataPrivacy({userID}: Props) {
       allowCall: isAllowCall,
     };
     await axios
-      .post('http://192.168.0.7:3333/notification', userOptions)
+      .post('https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/notification', userOptions)
       .then(() => {
         setIsAllowSMS(isAllowSMS);
         setIsAllowEmail(isAllowEmail);
@@ -86,7 +86,7 @@ export function DataPrivacy({userID}: Props) {
       allowCall: isAllowCall,
     };
     await axios
-      .put(`http://192.168.0.7:3333/notification/${mongoID}`, userOptions)
+      .put(`https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/notification/${mongoID}`, userOptions)
       .then(() => {
         setIsAllowEmail(isAllowEmail);
         setIsAllowSMS(isAllowSMS);
