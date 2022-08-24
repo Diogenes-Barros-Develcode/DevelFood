@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import {Alert, Text} from 'react-native';
+import {Alert} from 'react-native';
 import {Container, Content, DataPrivacyWrapper, PrivacyText, PrivacyTitle, SaveButton, SaveTitle, Title} from './styles';
 import CheckBox from '@react-native-community/checkbox';
 import {StyleSheet} from 'react-native';
@@ -135,7 +135,6 @@ export function DataPrivacy({userID}: Props) {
 
         <DataPrivacyWrapper>
           <Title>Aceita receber e-mail com promoções?</Title>
-          <Text>{data?.userID}</Text>
           <CheckBox
             style={styles.checkbox}
             value={isAllowEmail}
