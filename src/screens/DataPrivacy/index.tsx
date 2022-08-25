@@ -1,6 +1,15 @@
 import React, {useCallback, useState} from 'react';
 import {Alert} from 'react-native';
-import {Container, Content, DataPrivacyWrapper, PrivacyText, PrivacyTitle, SaveButton, SaveTitle, Title} from './styles';
+import {
+  Container,
+  Content,
+  DataPrivacyWrapper,
+  PrivacyText,
+  PrivacyTitle,
+  SaveButton,
+  SaveTitle,
+  Title,
+} from './styles';
 import CheckBox from '@react-native-community/checkbox';
 import {StyleSheet} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -30,7 +39,15 @@ interface UserProps {
 export function DataPrivacy({userID}: Props) {
   const theme = useTheme();
 
-  const {token, isAllowEmail, setIsAllowEmail, isAllowSMS, setIsAllowSMS, isAllowCall, setIsAllowCall} = useAuth();
+  const {
+    token,
+    isAllowEmail,
+    setIsAllowEmail,
+    isAllowSMS,
+    setIsAllowSMS,
+    isAllowCall,
+    setIsAllowCall,
+  } = useAuth();
 
   const [data, setData] = useState<Props>({} as Props);
 
@@ -46,13 +63,15 @@ export function DataPrivacy({userID}: Props) {
 
   const get = async () => {
     await axios
-      .get<Props>(`https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/notification/${userID}`)
+      .get<Props>(
+        `https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/userprivacy/${userID}`,
+      )
       .then((response: AxiosResponse) => {
         setData(response.data);
         setIsAllowEmail(!!response?.data?.allowEmail || false);
         setIsAllowSMS(!!response?.data?.allowSMS || false);
         setIsAllowCall(!!response?.data?.allowCall || false);
-        setMongoID(response?.data?._id)
+        setMongoID(response?.data?._id);
       })
       .catch((error: AxiosError) => {
         console.log(error);
@@ -67,14 +86,17 @@ export function DataPrivacy({userID}: Props) {
       allowCall: isAllowCall,
     };
     await axios
-      .post('https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/notification', userOptions)
+      .post(
+        'https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/userprivacy',
+        userOptions,
+      )
       .then(() => {
         setIsAllowSMS(isAllowSMS);
         setIsAllowEmail(isAllowEmail);
         setIsAllowCall(isAllowCall);
       })
       .catch((error: AxiosError) => {
-        Alert.alert('Erro', 'Erro ao salvar')
+        Alert.alert('Erro', 'Erro ao salvar');
       });
   };
 
@@ -86,21 +108,23 @@ export function DataPrivacy({userID}: Props) {
       allowCall: isAllowCall,
     };
     await axios
-      .put(`https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/notification/${mongoID}`, userOptions)
+      .put(
+        `https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/userprivacy/${mongoID}`,
+        userOptions,
+      )
       .then(() => {
         setIsAllowEmail(isAllowEmail);
         setIsAllowSMS(isAllowSMS);
         setIsAllowCall(isAllowCall);
-        console.log('console.log ==>', isAllowEmail, isAllowCall, isAllowSMS)
+        console.log('console.log ==>', isAllowEmail, isAllowCall, isAllowSMS);
       })
       .catch((error: AxiosError) => {
-        Alert.alert('Erro', 'Erro ao editar')
-        console.log(error)
+        Alert.alert('Erro', 'Erro ao editar');
+        console.log(error);
       });
   };
 
   function handleNotificationButton() {
-    console.log(mongoID);
     if (mongoID) {
       put();
     } else {
@@ -112,7 +136,7 @@ export function DataPrivacy({userID}: Props) {
     useCallback(() => {
       get();
       fetchData();
-    }, [mongoID])
+    }, [mongoID]),
   );
 
   return (
@@ -125,10 +149,11 @@ export function DataPrivacy({userID}: Props) {
         backgroudColor={theme.colors.background}
       />
       <Content>
-
         <PrivacyText>
-          De acordo com a Lei Geral de Proteção de Dados Pessoais (LGPD), para que os seus dados pessoas estejam seguros e possam ser utilizados apenas nos benefícios
-          que você deseja, é necessario que você consista o uso deles, clicando abaixo:
+          De acordo com a Lei Geral de Proteção de Dados Pessoais (LGPD), para
+          que os seus dados pessoas estejam seguros e possam ser utilizados
+          apenas nos benefícios que você deseja, é necessario que você consista
+          o uso deles, clicando abaixo:
         </PrivacyText>
 
         <PrivacyTitle>Por onde aceita receber comunicação?</PrivacyTitle>
@@ -162,18 +187,17 @@ export function DataPrivacy({userID}: Props) {
             disabled={false}
           />
         </DataPrivacyWrapper>
+      </Content>
 
-        </Content>
-
-        <SaveButton
-            onPress={() => {
-              handleNotificationButton()
-            setTimeout(() => {get()}, 500)
-          }}
-          >
-          <SaveTitle>Salvar</SaveTitle>
-        </SaveButton>
-
+      <SaveButton
+        onPress={() => {
+          handleNotificationButton();
+          setTimeout(() => {
+            get();
+          }, 500);
+        }}>
+        <SaveTitle>Salvar</SaveTitle>
+      </SaveButton>
     </Container>
   );
 }
