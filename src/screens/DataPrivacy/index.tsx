@@ -64,7 +64,7 @@ export function DataPrivacy({userID}: Props) {
   const get = async () => {
     await axios
       .get<Props>(
-        `https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/userprivacy/${userID}`,
+        `https://1edd-2804-14c-7d86-a174-d856-d057-6448-e0f3.sa.ngrok.io/userprivacy/${userID}`,
       )
       .then((response: AxiosResponse) => {
         setData(response.data);
@@ -87,7 +87,7 @@ export function DataPrivacy({userID}: Props) {
     };
     await axios
       .post(
-        'https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/userprivacy',
+        'https://1edd-2804-14c-7d86-a174-d856-d057-6448-e0f3.sa.ngrok.io/userprivacy',
         userOptions,
       )
       .then(() => {
@@ -109,7 +109,7 @@ export function DataPrivacy({userID}: Props) {
     };
     await axios
       .put(
-        `https://bd29-2804-14c-7d86-a174-b4f9-86e9-a1fb-31b5.sa.ngrok.io/userprivacy/${mongoID}`,
+        `https://1edd-2804-14c-7d86-a174-d856-d057-6448-e0f3.sa.ngrok.io/userprivacy/${mongoID}`,
         userOptions,
       )
       .then(() => {
