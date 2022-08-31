@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import {Alert} from 'react-native';
+import {ActivityIndicator, Alert} from 'react-native';
 import {
   Container,
   Content,
@@ -15,8 +15,7 @@ import {StyleSheet} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {HeaderComponent} from '@components/HeaderComponent';
 import {useTheme} from 'styled-components';
-import {useEffect} from 'react';
-import axios, {AxiosError, AxiosResponse} from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useAuth} from '@global/context';
 import {useFetch} from '@global/services/get';
@@ -36,6 +35,13 @@ interface UserProps {
   costumer: CostumerProps;
 }
 
+interface responseObject {
+  userID: number;
+  allowEmail?: boolean;
+  allowSMS?: boolean;
+  allowCall?: boolean;
+}
+
 export function DataPrivacy({userID}: Props) {
   const theme = useTheme();
 
@@ -49,9 +55,13 @@ export function DataPrivacy({userID}: Props) {
     setIsAllowCall,
   } = useAuth();
 
-  const [data, setData] = useState<Props>({} as Props);
-
   const [mongoID, setMongoID] = useState<string>('');
+
+  const [responseObject, setResponseObject] = useState<responseObject>(
+    {} as responseObject,
+  );
+
+  const [loading, setLoading] = useState<boolean>(true);
 
   const navigation = useNavigation();
 
@@ -63,66 +73,65 @@ export function DataPrivacy({userID}: Props) {
 
   const get = async () => {
     await axios
-      .get<Props>(
-        `https://1edd-2804-14c-7d86-a174-d856-d057-6448-e0f3.sa.ngrok.io/userprivacy/${userID}`,
-      )
+      .get<Props>(`http://172.22.19.61:3333/userprivacy/${userID}`)
       .then((response: AxiosResponse) => {
-        setData(response.data);
+        setResponseObject({
+          userID: response.data.userID,
+          allowSMS: response.data.allowSMS,
+          allowEmail: response.data.allowEmail,
+          allowCall: response.data.allowCall,
+        });
         setIsAllowEmail(!!response?.data?.allowEmail || false);
         setIsAllowSMS(!!response?.data?.allowSMS || false);
         setIsAllowCall(!!response?.data?.allowCall || false);
         setMongoID(response?.data?._id);
       })
-      .catch((error: AxiosError) => {
-        console.log(error);
+      .catch(() => {
+        Alert.alert('Erro', 'Erro ao carregar dados');
       });
+    setLoading(false);
   };
 
   const post = async () => {
     const userOptions = {
       userID: dataID?.costumer?.id,
-      allowEmail: isAllowEmail,
       allowSMS: isAllowSMS,
+      allowEmail: isAllowEmail,
       allowCall: isAllowCall,
     };
     await axios
-      .post(
-        'https://1edd-2804-14c-7d86-a174-d856-d057-6448-e0f3.sa.ngrok.io/userprivacy',
-        userOptions,
-      )
-      .then(() => {
-        setIsAllowSMS(isAllowSMS);
-        setIsAllowEmail(isAllowEmail);
-        setIsAllowCall(isAllowCall);
-      })
-      .catch((error: AxiosError) => {
+      .post('http://172.22.19.61:3333/userprivacy', userOptions)
+      .catch(() => {
         Alert.alert('Erro', 'Erro ao salvar');
       });
   };
 
   const put = async () => {
-    const userOptions = {
+    const userOptions: responseObject = {
       userID: dataID?.costumer?.id,
-      allowEmail: isAllowSMS,
-      allowSMS: isAllowEmail,
+      allowSMS: isAllowSMS,
+      allowEmail: isAllowEmail,
       allowCall: isAllowCall,
     };
+    if (verify(userOptions, responseObject)) {
+      return Alert.alert('Erro', 'As informações não foram modificadas');
+    }
     await axios
-      .put(
-        `https://1edd-2804-14c-7d86-a174-d856-d057-6448-e0f3.sa.ngrok.io/userprivacy/${mongoID}`,
-        userOptions,
-      )
-      .then(() => {
-        setIsAllowEmail(isAllowEmail);
-        setIsAllowSMS(isAllowSMS);
-        setIsAllowCall(isAllowCall);
-        console.log('console.log ==>', isAllowEmail, isAllowCall, isAllowSMS);
-      })
-      .catch((error: AxiosError) => {
+      .put(`http://172.22.19.61:3333/userprivacy/${mongoID}`, userOptions)
+      .catch(() => {
         Alert.alert('Erro', 'Erro ao editar');
-        console.log(error);
       });
   };
+
+  function verify(
+    objectRequest: responseObject,
+    objectResponse: responseObject,
+  ) {
+    const verify =
+      JSON.stringify(objectRequest) === JSON.stringify(objectResponse);
+
+    return verify;
+  }
 
   function handleNotificationButton() {
     if (mongoID) {
@@ -196,7 +205,11 @@ export function DataPrivacy({userID}: Props) {
             get();
           }, 500);
         }}>
-        <SaveTitle>Salvar</SaveTitle>
+        {loading ? (
+          <ActivityIndicator color={theme.colors.background} size={25} />
+        ) : (
+          <SaveTitle>Salvar</SaveTitle>
+        )}
       </SaveButton>
     </Container>
   );
